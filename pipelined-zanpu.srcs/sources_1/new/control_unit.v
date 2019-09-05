@@ -1,26 +1,17 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2019/09/05 19:05:10
-// Design Name: 
-// Module Name: control_unit
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
+`include "definitions.v"
 
+/*
+ * Module: ZanPU Control Unit
+ *
+ * Input:
+ * Output:
+ */
 
 module control_unit(
+    input wire[31:0] instruction,
+    input wire zero
 
+    // output wire
     );
 endmodule

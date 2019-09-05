@@ -1,26 +1,19 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2019/09/05 19:01:33
-// Design Name: 
-// Module Name: instruction_memory
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
+`include "definitions.v"
 
+/*
+ * Module: ZanPU Instruction Memory
+ *
+ * Input:  .instruction_addr
+ * Output: .instruction
+ */
 
 module instruction_memory(
+           input  wire[11:2] instruction_addr, // PC fetch instruction address
 
-    );
+           output wire[31:0] instruction       // IM fetch instruction from register
+       );
+
+reg[31:0] im[`IM_LENGTH:0];
+assign instruction = im[instruction_addr];
 endmodule

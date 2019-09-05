@@ -1,26 +1,22 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2019/09/05 20:21:47
-// Design Name: 
-// Module Name: npc
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
+`include "definitions.v"
 
+/*
+ * Module: ZanPU NPC
+ *
+ * Input:  .clk .pc .imm16 .imm26 .en_npc_op
+ * Output: .npc
+ */
 
 module npc(
+    input  wire clk,
+    input  wire[31:0] pc,
+    input  wire[15:0] imm16,
+    input  wire[25:0] imm26,
 
+    input  wire en_npc_op,
+
+    output wire[31:0] npc
     );
+
 endmodule

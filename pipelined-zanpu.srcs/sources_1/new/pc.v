@@ -1,26 +1,27 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2019/09/05 19:00:33
-// Design Name: 
-// Module Name: pc
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
+`include "definitions.v"
 
+/*
+ * Module: ZanPU PC
+ *
+ * Input:  .clk .rst .npc
+ * Output: .pc
+ */
 
 module pc(
+           input  wire       clk,
+           input  wire       rst,
+           input  wire[31:0] npc,
 
-    );
+           output reg[31:0]  pc
+       );
+
+always @ (posedge clk or posedge rst) begin
+    if (rst) begin
+        pc <= `INIT_32;
+    end
+    else begin
+        pc <= npc;
+    end
+end
 endmodule
