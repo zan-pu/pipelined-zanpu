@@ -17,7 +17,7 @@ This project is the team project of BIT's 2019 summer CPU-building lecture. ZanP
 
 All source codes are available at [pipelined-zanpu.srcs](./pipelined-zanpu.srcs).
 
-- [Design Sources](./pipelined-zanpu.srcss/sources_1/new)
+- [Design Sources](./pipelined-zanpu.srcs/sources_1/new)
 - [Simulation Sources](./pipelined-zanpu.srcs/sim_1/new)
 
 Instruction, data memory and register files are initialized at [pipelined-zanpu.tbcode](./pipelined-zanpu.tbcode).
