@@ -13,11 +13,10 @@ module register_file(
            input  wire[4:0]  rs,
            input  wire[4:0]  rt,
            input  wire[4:0]  write_reg_addr, // rs or rd, defined in WB stage
-           input  wire[31:0] write_data,
+           input  wire[31:0] write_data,     // write data back to dest reg
 
-           input  wire       en_reg_write,
+           input  wire       en_reg_write,   // enable register write
 
-           output wire       zero,           // bigger than, smaller than or equal to zero
            output wire[31:0] reg1_data,
            output wire[31:0] reg2_data
        );
@@ -28,18 +27,6 @@ reg[31:0] gpr[31:0];
 // Get register data from GPR
 assign reg1_data = (rs == `INIT_5) ? `INIT_32 : gpr[rs];
 assign reg2_data = (rt == `INIT_5) ? `INIT_32 : gpr[rt];
-
-// Result of rs - rt, in order to calculate branching information
-wire[31:0] diff;
-reg[32:0]  temp;
-
-assign diff = temp[31:0];
-assign zero = (diff == 0) ? `BRANCH_TRUE : `BRANCH_FALSE;
-
-// Calculate rs - rt
-always @ (*) begin
-    temp <= {reg1_data[31], reg1_data} - {reg2_data[31], reg2_data};
-end
 
 // Write data back to register
 always @ (posedge clk) begin

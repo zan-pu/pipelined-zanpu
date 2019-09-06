@@ -4,20 +4,39 @@
  * Module: ZanPU Definition File
  */
 
-/* Micellanenous */
+/* --- Micellanenous --- */
 
 // Instruction Memory Length
 `define IM_LENGTH       1023
+`define DM_LENGTH       1023
 
 // Init reg/wire with zeros
+`define INIT_4          4'b0000
 `define INIT_5          5'b00000
-`define INIT_6          6'b000000
+`define INIT_16         16'h0000
 `define INIT_32         32'h00000000
 
-/* Control Signals */
+/* --- Instruction Decode --- */
+
+// R-Type instructions
+`define INST_R_TYPE     6'b000000  // R-Type opcode, decode via function code
+`define FUNC_ADD        6'b100000  // ADD func code
+`define FUNC_SUBU       6'b100011  // SUBU func code
+
+// I-Type instructions
+`define INST_LUI        6'b001111  // LUI
+`define INST_ADDIU      6'b001001  // ADDIU
+`define INST_LW         6'b100011  // LW
+`define INST_SW         6'b101011  // SW
+`define INST_BEQ        6'b000100  // BEQ
+
+// J-Type instructions
+`define INST_J          6'b000010  // J
+
+/* --- Control Signals --- */
 
 // Register Write EN
-`define REG_WRITE_EN    1'b1       // Enable register write 
+`define REG_WRITE_EN    1'b1       // Enable register write
 `define REG_WRITE_DIS   1'b0       // Disable register write
 
 // ExtOp Control Signals
@@ -35,7 +54,7 @@
 `define ALU_OP_LENGTH   3          // Length of signal ALUOp
 `define ALU_OP_DEFAULT  3'b000     // ALUOp default value
 `define ALU_OP_ADD      3'b001     // ALUOp ADD
-`define ALU_OP_SUB      3'b010     // ALUOp SUB
+`define ALU_OP_SUBU     3'b010     // ALUOp SUBU
 
 // Memory Write EN
 `define MEM_WRITE_EN    1'b1       // Enable memory write
