@@ -2,14 +2,13 @@
 `include "definitions.vh"
 
 /*
- * Module: ZanPU Multiplexers
+ * Module: ZanPU Branch Judge
  *
  * Input:
  * Output:
  */
 
-
-module mux(
+module branch_judge(
 
     );
 endmodule

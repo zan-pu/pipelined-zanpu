@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-`include "definitions.v"
+`include "definitions.vh"
 
 /*
  * Module: ZanPU Control Unit
@@ -9,9 +9,9 @@
  */
 
 module control_unit(
-    input wire[31:0] instruction,
-    input wire zero
+           input wire[31:0] instruction,
+           input wire zero
 
-    // output wire
-    );
+           // output wire
+       );
 endmodule

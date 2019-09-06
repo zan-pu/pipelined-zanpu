@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-`include "definitions.v"
+`include "definitions.vh"
 
 /*
  * Module: ZanPU Register File
@@ -8,15 +8,14 @@
  * Output:
  */
 
-
 module register_file(
-           input wire        clk,
-           input wire[4:0]   rs,
-           input wire[4:0]   rt,
-           input wire[4:0]   write_reg_addr, // rs or rd, defined in WB stage
-           input wire[31:0]  write_data,
+           input  wire       clk,
+           input  wire[4:0]  rs,
+           input  wire[4:0]  rt,
+           input  wire[4:0]  write_reg_addr, // rs or rd, defined in WB stage
+           input  wire[31:0] write_data,
 
-           input wire        en_reg_write,
+           input  wire       en_reg_write,
 
            output wire       zero,           // bigger than, smaller than or equal to zero
            output wire[31:0] reg1_data,

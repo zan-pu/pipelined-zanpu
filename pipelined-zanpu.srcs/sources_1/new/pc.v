@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-`include "definitions.v"
+`include "definitions.vh"
 
 /*
  * Module: ZanPU PC
