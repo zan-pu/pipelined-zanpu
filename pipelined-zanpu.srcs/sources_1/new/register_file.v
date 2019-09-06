@@ -35,7 +35,7 @@ wire[31:0] diff;
 reg[32:0]  temp;
 
 assign diff = temp[31:0];
-assign zero = (diff == 0) ? `BRANCH_EQUAL : `BRANCH_DEFAULT;
+assign zero = (diff == 0) ? `BRANCH_TRUE : `BRANCH_FALSE;
 
 // Calculate rs - rt
 always @ (*) begin
