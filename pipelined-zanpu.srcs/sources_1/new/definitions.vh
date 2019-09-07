@@ -20,15 +20,39 @@
 
 // R-Type instructions
 `define INST_R_TYPE     6'b000000  // R-Type opcode, decode via function code
-`define FUNC_ADD        6'b100000  // ADD func code
-`define FUNC_SUBU       6'b100011  // SUBU func code
+// func code
+`define FUNC_ADD        6'b100000  // ADD
+`define FUNC_ADDU       6'b100001  // ADDU
+`define FUNC_SUB        6'b100010  // SUB
+`define FUNC_SUBU       6'b100011  // SUBU
+`define FUNC_SLT        6'b101010  // SLT
+`define FUNC_SLTU       6'b101011  // SLTU
+`define FUNC_AND        6'b100100  // AND
+`define FUNC_OR         6'b100101  // OR
+`define FUNC_NOR        6'b100111  // NOR
+`define FUNC_XOR        6'b100110  // XOR
+`define FUNC_SLL        6'b000000  // SLL
+`define FUNC_SRL        6'b000010  // SRL
+`define FUNC_SRA        6'b000011  // SRA
+`define FUNC_SLLV       6'b000100  // SLLV
+`define FUNC_SRLV       6'b000110  // SRLV
+`define FUNC_SRAV       6'b000111  // SRAV
+
+`define FUNC_JR         6'b001000  // JR
+`define FUNC_JALR       6'b001001  // JALR
 
 // I-Type instructions
-`define INST_LUI        6'b001111  // LUI
+`define INST_ADDI       6'b001000  // ADDI
 `define INST_ADDIU      6'b001001  // ADDIU
+`define INST_SLTIU      6'b001011  // SLTIU
+`define INST_ANDI       6'b001100  // ANDI
+`define INST_ORI        6'b001101  // ORI
+`define INST_XORI       6'b001110  // XORI
+`define INST_LUI        6'b001111  // LUI
 `define INST_LW         6'b100011  // LW
 `define INST_SW         6'b101011  // SW
 `define INST_BEQ        6'b000100  // BEQ
+`define INST_BNE        6'b000101  // BNE
 
 // J-Type instructions
 `define INST_J          6'b000010  // J
