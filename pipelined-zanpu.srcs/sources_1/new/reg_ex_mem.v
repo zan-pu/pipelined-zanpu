@@ -14,7 +14,7 @@ module reg_ex_mem(
            input wire[31:0]                  alu_result_in,
            input wire[31:0]                  reg2_data_in,
            input wire[31:0]                  extended_imm_in,
-           input wire[31:0]                  destination_reg_in,
+           input wire[4:0]                   destination_reg_in,
 
            input wire                        en_mem_write_in,
            input wire[`REG_SRC_LENGTH - 1:0] cu_reg_src_in,
@@ -23,9 +23,9 @@ module reg_ex_mem(
            output reg[31:0]                  alu_result_out,
            output reg[31:0]                  reg2_data_out,
            output reg[31:0]                  extended_imm_out,
-           output reg[31:0]                  destination_reg_out,
+           output reg[4:0]                   destination_reg_out,
 
-           output reg[31:0]                  en_mem_write_out,
+           output reg                        en_mem_write_out,
            output reg[`REG_SRC_LENGTH - 1:0] cu_reg_src_out,
            output reg                        en_reg_write_out
        );
@@ -39,7 +39,7 @@ always @ (posedge clk) begin
         alu_result_out      <= `INIT_32;
         reg2_data_out       <= `INIT_32;
         extended_imm_out    <= `INIT_32;
-        destination_reg_out <= `INIT_32;
+        destination_reg_out <= `INIT_5;
         en_mem_write_out    <= `MEM_WRITE_DIS;
         cu_reg_src_out      <= `REG_SRC_DEFAULT;
         en_reg_write_out    <= `REG_WRITE_DIS;

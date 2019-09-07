@@ -110,6 +110,7 @@ control_unit u_control_unit(
              );
 
 wire[4:0]                   destination_reg_wb;
+wire                        en_reg_write_wb;
 
 register_file u_register_file(
                   .clk            (clk                ),
@@ -117,7 +118,7 @@ register_file u_register_file(
                   .rt             (rt                 ),
                   .write_reg_addr (destination_reg_wb ),
                   .write_data     (write_data         ),
-                  .en_reg_write   (en_reg_write       ),
+                  .en_reg_write   (en_reg_write_wb    ),
                   .reg1_data      (reg1_data          ),
                   .reg2_data      (reg2_data          )
               );
@@ -237,8 +238,8 @@ reg_ex_mem u_reg_ex_mem(
                .extended_imm_in     (extended_imm        ),
                .destination_reg_in  (destination_reg     ),
                .en_mem_write_in     (en_mem_write        ),
-               .cu_reg_src_in       (cu_reg_src          ),
-               .en_reg_write_in     (en_reg_write        ),
+               .cu_reg_src_in       (cu_reg_src_out      ),
+               .en_reg_write_in     (en_reg_write_out    ),
                .alu_result_out      (alu_result_out      ),
                .reg2_data_out       (reg2_data_mem       ),
                .extended_imm_out    (extended_imm_out    ),
@@ -264,7 +265,6 @@ wire[31:0]                  alu_result_wb;
 wire[31:0]                  read_mem_data_out;
 wire[31:0]                  extended_imm_wb;
 wire[`REG_SRC_LENGTH - 1:0] cu_reg_src_wb;
-wire                        en_reg_write_wb;
 
 reg_mem_wb u_reg_mem_wb(
                .clk                 (clk                 ),

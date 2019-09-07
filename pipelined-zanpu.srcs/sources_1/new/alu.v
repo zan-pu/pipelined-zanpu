@@ -16,17 +16,9 @@ module alu(
 
            output wire[31:0]                   alu_result
        );
-reg[32:0] alu_reg;
-assign alu_result = alu_reg[31:0];
 
-always @ (*) begin
-    case (cu_alu_op)
-        `ALU_OP_ADD:
-            alu_reg <= {alu_input_1[31], alu_input_1} + {alu_input_2[31], alu_input_2};
-        `ALU_OP_SUBU:
-            alu_reg <= {alu_input_1[31], alu_input_1} - {alu_input_2[31], alu_input_2};
-        default:
-            alu_reg <= {alu_input_2[31], alu_input_2};
-    endcase
-end
+assign alu_result =
+       (cu_alu_op == `ALU_OP_ADD)  ? {alu_input_1[31], alu_input_1} + {alu_input_2[31], alu_input_2} :
+       (cu_alu_op == `ALU_OP_SUBU) ? {alu_input_1[31], alu_input_1} - {alu_input_2[31], alu_input_2} :
+       {alu_input_2[31], alu_input_2};
 endmodule

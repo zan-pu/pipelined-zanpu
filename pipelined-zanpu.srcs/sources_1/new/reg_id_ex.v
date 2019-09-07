@@ -67,7 +67,7 @@ always @(posedge clk) begin
         reg1_data_out    <= reg1_data_in;
         reg2_data_out    <= reg2_data_in;
         rt_out           <= rt_in;
-        rd_out           <= rd_out;
+        rd_out           <= rd_in;
         sa_out           <= sa_in;
         imm16_out        <= imm16_in;
 
