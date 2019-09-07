@@ -34,7 +34,7 @@ pc u_pc(
    );
 
 instruction_memory u_instruction_memory(
-                       .instruction_addr (pc          ),
+                       .instruction_addr (pc[11:2]    ),
                        .instruction      (instruction )
                    );
 
@@ -251,11 +251,11 @@ reg_ex_mem u_reg_ex_mem(
 wire[31:0] read_mem_data;
 
 data_memory u_data_memory(
-                .clk            (clk              ),
-                .en_mem_write   (en_mem_write_mem ),
-                .mem_addr       (alu_result_out   ),
-                .write_mem_data (reg2_data_mem    ),
-                .read_mem_data  (read_mem_data    )
+                .clk            (clk                  ),
+                .en_mem_write   (en_mem_write_mem     ),
+                .mem_addr       (alu_result_out[11:2] ),
+                .write_mem_data (reg2_data_mem        ),
+                .read_mem_data  (read_mem_data        )
             );
 
 wire[31:0]                  alu_result_wb;
