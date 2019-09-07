@@ -4,9 +4,8 @@
 /*
  * Module: ZanPU Top Module
  *
- * Input:
+ * Input:  .clk .rst
  * Output:
- * Submodules:
  */
 
 module zanpu_top(
@@ -109,8 +108,8 @@ control_unit u_control_unit(
                  .cu_npc_op    (cu_npc_op    )
              );
 
-wire[4:0]                   destination_reg_wb;
-wire                        en_reg_write_wb;
+wire[4:0] destination_reg_wb;
+wire      en_reg_write_wb;
 
 register_file u_register_file(
                   .clk            (clk                ),

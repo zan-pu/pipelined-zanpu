@@ -4,8 +4,8 @@
 /*
  * Module: ZanPU Extend
  *
- * Input:
- * Output:
+ * Input:  .imm16 .cu_ext_op
+ * Output: .extended_imm
  */
 
 module extend(

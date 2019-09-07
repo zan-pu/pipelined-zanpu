@@ -4,8 +4,8 @@
 /*
  * Module: ZanPU Data Memory
  *
- * Input:
- * Output:
+ * Input:  .clk .en_mem_write .mem_addr .write_mem_data
+ * Output: .read_mem_data
  */
 
 module data_memory(

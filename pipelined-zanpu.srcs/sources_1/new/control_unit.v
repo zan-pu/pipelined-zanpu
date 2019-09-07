@@ -3,9 +3,6 @@
 
 /*
  * Module: ZanPU Control Unit
- *
- * Input:
- * Output:
  */
 
 module control_unit(
@@ -66,30 +63,34 @@ assign inst_bne       = (opcode == `INST_BNE          ) ? 1 : 0;
 assign inst_j         = (opcode == `INST_J            ) ? 1 : 0;
 
 // Determine control signals
-assign cu_alu_op    = (inst_add || inst_addiu || inst_lw || inst_sw) ? `ALU_OP_ADD : // Addition in ALU
-       (inst_subu || inst_beq) ? `ALU_OP_SUBU :                            // Subtraction in ALU
-       `ALU_OP_DEFAULT;                                          // Default ALU operand (output the second ALU input)
+assign cu_alu_op      =
+       (inst_add || inst_addiu || inst_lw || inst_sw) ? `ALU_OP_ADD : // Addition in ALU
+       (inst_subu || inst_beq) ? `ALU_OP_SUBU :                       // Subtraction in ALU
+       `ALU_OP_DEFAULT;                                               // Default ALU operand (output the second ALU input)
 
 // RegDst signal
-assign cu_reg_dst   = (inst_add || inst_subu) ? 1 : 0;
+assign cu_reg_dst     = (inst_add || inst_subu) ? 1 : 0;
 // ALUSrc signal
-assign cu_alu_src   = (inst_addiu || inst_lw || inst_sw) ? 1 : 0;
+assign cu_alu_src     = (inst_addiu || inst_lw || inst_sw) ? 1 : 0;
 
 // Write signals
-assign en_reg_write = (inst_lui || type_r || inst_add || inst_subu || inst_addiu || inst_lw) ? 1 : 0;
-assign en_mem_write = (inst_sw) ? 1 : 0;
+assign en_reg_write   = (inst_lui || type_r || inst_add || inst_subu || inst_addiu || inst_lw) ? 1 : 0;
+assign en_mem_write   = (inst_sw) ? 1 : 0;
 
-assign cu_reg_src   = (inst_lui) ? `REG_SRC_IMM :                      // Source: Extended immediate
-       (inst_addiu || inst_add || inst_subu) ? `REG_SRC_ALU :                 // Source: ALU result
-       (inst_lw) ? `REG_SRC_MEM : `REG_SRC_DEFAULT;                 // Source: Data memory
+assign cu_reg_src     =
+       (inst_lui) ? `REG_SRC_IMM :                            // Source: Extended immediate
+       (inst_addiu || inst_add || inst_subu) ? `REG_SRC_ALU : // Source: ALU result
+       (inst_lw) ? `REG_SRC_MEM : `REG_SRC_DEFAULT;           // Source: Data memory
 
-assign cu_ext_op    = (inst_lui) ? `EXT_OP_SFT16 :                     // Extend module operation: shift left 16
-       (inst_addiu) ? `EXT_OP_SIGNED :                              // Extend module operation: signed extend
-       (inst_lw || inst_sw) ? `EXT_OP_UNSIGNED :                         // Extend module operation: unsigned extend
-       `EXT_OP_DEFAULT;                                        // Extend module operation: default operation (unsigned extend)
+assign cu_ext_op      =
+       (inst_lui) ? `EXT_OP_SFT16 :              // Extend module operation: shift left 16
+       (inst_addiu) ? `EXT_OP_SIGNED :           // Extend module operation: signed extend
+       (inst_lw || inst_sw) ? `EXT_OP_UNSIGNED : // Extend module operation: unsigned extend
+       `EXT_OP_DEFAULT;                          // Extend module operation: default operation (unsigned extend)
 
-assign cu_npc_op    = (inst_lui || inst_addiu || inst_add || inst_subu || inst_lw || inst_sw) ? `NPC_OP_NEXT : // NPC: normal - next instruction
-       (inst_beq && !zero) ? `NPC_OP_NEXT :                                        // NPC: inst_beq - normal - next instruction
-       (inst_beq && zero) ? `NPC_OP_OFFSET :                                       // NPC: inst_beq - jump to target
-       (inst_j) ? `NPC_OP_JUMP : `NPC_OP_DEFAULT;                                  // NPC: inst_j - just jump!
+assign cu_npc_op      =
+       (inst_lui || inst_addiu || inst_add || inst_subu || inst_lw || inst_sw) ? `NPC_OP_NEXT : // NPC: normal - next instruction
+       (inst_beq && !zero) ? `NPC_OP_NEXT :                                                     // NPC: inst_beq - normal - next instruction
+       (inst_beq && zero) ? `NPC_OP_OFFSET :                                                    // NPC: inst_beq - jump to target
+       (inst_j) ? `NPC_OP_JUMP : `NPC_OP_DEFAULT;                                               // NPC: inst_j - just jump!
 endmodule
