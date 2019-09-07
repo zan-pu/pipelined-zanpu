@@ -109,15 +109,17 @@ control_unit u_control_unit(
                  .cu_npc_op    (cu_npc_op    )
              );
 
+wire[4:0]                   destination_reg_wb;
+
 register_file u_register_file(
-                  .clk            (clk            ),
-                  .rs             (rs             ),
-                  .rt             (rt             ),
-                  .write_reg_addr (write_reg_addr ),
-                  .write_data     (write_data     ),
-                  .en_reg_write   (en_reg_write   ),
-                  .reg1_data      (reg1_data      ),
-                  .reg2_data      (reg2_data      )
+                  .clk            (clk                ),
+                  .rs             (rs                 ),
+                  .rt             (rt                 ),
+                  .write_reg_addr (destination_reg_wb ),
+                  .write_data     (write_data         ),
+                  .en_reg_write   (en_reg_write       ),
+                  .reg1_data      (reg1_data          ),
+                  .reg2_data      (reg2_data          )
               );
 
 npc u_npc(
@@ -220,7 +222,7 @@ alu u_alu(
 wire[31:0] alu_result_out;
 wire[31:0] reg2_data_mem;
 wire[31:0] extended_imm_out;
-wire[31:0] destination_reg_out;
+wire[4:0]  destination_reg_out;
 
 // control signals to be forwarded to MEM stage
 wire                        en_mem_write_mem;
@@ -261,7 +263,6 @@ data_memory u_data_memory(
 wire[31:0]                  alu_result_wb;
 wire[31:0]                  read_mem_data_out;
 wire[31:0]                  extended_imm_wb;
-wire[31:0]                  destination_reg_wb;
 wire[`REG_SRC_LENGTH - 1:0] cu_reg_src_wb;
 wire                        en_reg_write_wb;
 
@@ -288,7 +289,7 @@ reg_src_mux u_reg_src_mux(
                 .cu_reg_src    (cu_reg_src_wb     ),
                 .alu_result    (alu_result_wb     ),
                 .read_mem_data (read_mem_data_out ),
-                .extend_imm    (extend_imm_wb     ),
+                .extend_imm    (extended_imm_wb   ),
                 .mux_out       (write_data        )
             );
 endmodule

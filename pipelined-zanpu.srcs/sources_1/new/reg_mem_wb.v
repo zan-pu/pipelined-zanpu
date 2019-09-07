@@ -14,7 +14,7 @@ module reg_mem_wb(
            input wire[31:0]                  alu_result_in,
            input wire[31:0]                  read_mem_data_in,
            input wire[31:0]                  extended_imm_in,
-           input wire[31:0]                  destination_reg_in,
+           input wire[4:0]                   destination_reg_in,
 
            input wire[`REG_SRC_LENGTH - 1:0] cu_reg_src_in,
            input wire                        en_reg_write_in,
@@ -22,7 +22,7 @@ module reg_mem_wb(
            output reg[31:0]                  alu_result_out,
            output reg[31:0]                  read_mem_data_out,
            output reg[31:0]                  extended_imm_out,
-           output reg[31:0]                  destination_reg_out,
+           output reg[4:0]                   destination_reg_out,
 
            output reg[`REG_SRC_LENGTH - 1:0] cu_reg_src_out,
            output reg                        en_reg_write_out
