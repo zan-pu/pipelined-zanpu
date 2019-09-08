@@ -40,3 +40,17 @@ assign mux_out = (cu_reg_src == `REG_SRC_ALU) ? alu_result :
        (cu_reg_src == `REG_SRC_MEM) ? read_mem_data :
        extend_imm;
 endmodule
+
+module forward_mux(
+           input  wire[1:0]       forward_c,
+           input  wire[31:0] rs_rt_imm,
+           input  wire[31:0] write_data,
+           input  wire[31:0] alu_result,
+
+           output wire[31:0] mux_out
+);
+
+assign mux_out = (forward_c == `FORWARD_ONE_CYCLE) ? alu_result :
+        (forward_c == `FORWARD_TWO_CYCLE) ? write_data :
+        rs_rt_imm;
+endmodule

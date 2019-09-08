@@ -120,3 +120,7 @@
 // Branching signals
 `define BRANCH_TRUE     1'b1       // Branch to true
 `define BRANCH_FALSE    1'b0       // Branch to false
+
+//Forward Control Signals
+`define FORWARD_ONE_CYCLE 2'b10
+`define FORWARD_TWO_CYCLE 2'b01

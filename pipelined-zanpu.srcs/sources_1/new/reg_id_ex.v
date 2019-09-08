@@ -13,6 +13,7 @@ module reg_id_ex(
            input  wire                       rst,
            input  wire[31:0]                 reg1_data_in,
            input  wire[31:0]                 reg2_data_in,
+           input  wire[4:0]                  rs_in,
            input  wire[4:0]                  rt_in,
            input  wire[4:0]                  rd_in,
            input  wire[4:0]                  sa_in,
@@ -28,6 +29,7 @@ module reg_id_ex(
 
            output reg[31:0]                  reg1_data_out,
            output reg[31:0]                  reg2_data_out,
+           output reg[4:0]                   rs_out,
            output reg[4:0]                   rt_out,
            output reg[4:0]                   rd_out,
            output reg[4:0]                   sa_out,
@@ -50,6 +52,7 @@ always @(posedge clk) begin
     if (zeroize) begin
         reg1_data_out    <= `INIT_32;
         reg2_data_out    <= `INIT_32;
+        rs_out           <= `INIT_5;
         rt_out           <= `INIT_5;
         rd_out           <= `INIT_5;
         sa_out           <= `INIT_5;
@@ -66,6 +69,7 @@ always @(posedge clk) begin
     else begin
         reg1_data_out    <= reg1_data_in;
         reg2_data_out    <= reg2_data_in;
+        rs_out           <= rs_in;
         rt_out           <= rt_in;
         rd_out           <= rd_in;
         sa_out           <= sa_in;
