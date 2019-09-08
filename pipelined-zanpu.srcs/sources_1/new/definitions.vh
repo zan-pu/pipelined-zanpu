@@ -19,7 +19,8 @@
 /* --- Instruction Decode --- */
 
 // R-Type instructions
-`define INST_R_TYPE     6'b000000  // R-Type opcode, decode via function code
+`define INST_R_TYPE     6'b000000  // R-Type opcode
+
 // func code
 `define FUNC_ADD        6'b100000  // ADD
 `define FUNC_ADDU       6'b100001  // ADDU
@@ -75,10 +76,24 @@
 `define ALU_SRC_IMM     1'b1       // ALU Source: immediate
 
 // ALU Control Signals
-`define ALU_OP_LENGTH   3          // Length of signal ALUOp
-`define ALU_OP_DEFAULT  3'b000     // ALUOp default value
-`define ALU_OP_ADD      3'b001     // ALUOp ADD
-`define ALU_OP_SUBU     3'b010     // ALUOp SUBU
+`define ALU_OP_LENGTH   4          // Length of signal ALUOp
+`define ALU_OP_DEFAULT  4'b0000    // ALUOp default value
+`define ALU_OP_ADD      4'b0001    // ALU add
+`define ALU_OP_SUB      4'b0010    // ALU sub
+`define ALU_OP_SLT      4'b0011    // ALU slt
+`define ALU_OP_AND      4'b0100    // ALU and
+`define ALU_OP_OR       4'b0101    // ALU or
+`define ALU_OP_XOR      4'b0110    // ALU xor
+`define ALU_OP_NOR      4'b0111    // ALU nor
+`define ALU_OP_SLL      4'b1000    // ALU sll, with respect to sa
+`define ALU_OP_SRL      4'b1001    // ALU srl, with respect to sa
+`define ALU_OP_SRA      4'b1010    // ALU sra, with respect to sa
+`define ALU_OP_SLLV     4'b1011    // ALU sllv, with respect to rs
+`define ALU_OP_SRLV     4'b1100    // ALU srlv, with respect to rs
+`define ALU_OP_SRAV     4'b1101    // ALU srav, with respect to rs
+
+`define OVERFLOW_TRUE   1'b1
+`define OVERFLOW_FALSE  1'b0
 
 // Memory Write EN
 `define MEM_WRITE_EN    1'b1       // Enable memory write
