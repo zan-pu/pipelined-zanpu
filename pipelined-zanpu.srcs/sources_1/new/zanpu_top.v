@@ -39,15 +39,12 @@ instruction_memory u_instruction_memory(
 
 /* id/id register */
 
-wire[31:0] pc_out;
 wire[31:0] instruction_out;
 
 reg_if_id u_reg_if_id(
               .clk              (clk              ),
               .rst              (rst              ),
-              .pc_in            (pc               ),
               .instructions_in  (instructions     ),
-              .pc_out           (pc_out           ),
               .instructions_out (instructions_out )
           );
 
@@ -249,7 +246,7 @@ forwarding_unit u_forwarding_unit(
                 );
 
 forward_mux u_forward_mux_1(
-                .forward_c  (forward_A         ),
+                .forward_C  (forward_A         ),
                 .rs_rt_imm  (reg1_data_out     ),
                 .write_data (write_data        ),
                 .alu_result (alu_result_out    ),
@@ -257,7 +254,7 @@ forward_mux u_forward_mux_1(
             );
 
 forward_mux u_forward_mux_2(
-                .forward_c  (forward_B         ),
+                .forward_C  (forward_B         ),
                 .rs_rt_imm  (reg2_data_out     ),
                 .write_data (write_data        ),
                 .alu_result (alu_result_out    ),

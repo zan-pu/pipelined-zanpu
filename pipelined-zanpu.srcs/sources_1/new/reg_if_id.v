@@ -11,10 +11,8 @@
 module reg_if_id(
            input  wire       clk,
            input  wire       rst,
-           input  wire[31:0] pc_in,
            input  wire[31:0] instructions_in,
 
-           output reg[31:0]  pc_out,
            output reg[31:0]  instructions_out
        );
 
@@ -24,11 +22,9 @@ assign zeroize = rst;
 
 always @ (posedge clk) begin
     if (zeroize) begin
-        pc_out <= `INIT_32;
         instructions_out <= `INIT_32;
     end
     else begin
-        pc_out <= pc_in;
         instructions_out <= instructions_in;
     end
 end
