@@ -123,7 +123,7 @@ register_file u_register_file(
               );
 
 npc u_npc(
-        .pc        (pc_out    ),
+        .pc        (pc        ),
         .imm16     (imm16     ),
         .imm26     (imm26     ),
         .cu_npc_op (cu_npc_op ),
@@ -138,6 +138,7 @@ branch_judge u_branch_judge(
 
 wire[31:0]                  reg1_data_out;
 wire[31:0]                  reg2_data_out;
+wire[4:0]                   rs_out;
 wire[4:0]                   rt_out;
 wire[4:0]                   rd_out;
 wire[4:0]                   sa_out;
@@ -155,6 +156,7 @@ reg_id_ex u_reg_id_ex(
               .rst              (rst              ),
               .reg1_data_in     (reg1_data        ),
               .reg2_data_in     (reg2_data        ),
+              .rs_in            (rs               ),
               .rt_in            (rt               ),
               .rd_in            (rd               ),
               .sa_in            (sa               ),
@@ -168,6 +170,7 @@ reg_id_ex u_reg_id_ex(
               .cu_reg_dst_in    (cu_reg_dst       ),
               .reg1_data_out    (reg1_data_out    ),
               .reg2_data_out    (reg2_data_out    ),
+              .rs_out           (rs_out           ),
               .rt_out           (rt_out           ),
               .rd_out           (rd_out           ),
               .sa_out           (sa_out           ),
@@ -201,33 +204,68 @@ reg_dst_mux u_reg_dst_mux(
             );
 
 wire[31:0] alu_src_mux_out;
+wire[31:0] alu_result;
+wire[31:0] forward_mux_out_1;
+wire[31:0] forward_mux_out_2;
 
 alu_src_mux u_alu_src_mux(
-                .cu_alu_src (cu_alu_src_out  ),
-                .rt         (reg2_data_out   ),
-                .imm        (extended_imm    ),
-                .mux_out    (alu_src_mux_out )
+                .cu_alu_src (cu_alu_src_out    ),
+                .rt         (forward_mux_out_2 ),
+                .imm        (extended_imm      ),
+                .mux_out    (alu_src_mux_out   )
             );
 
-wire[31:0] alu_result;
 
 alu u_alu(
-        .alu_input_1 (reg1_data_out   ),
-        .alu_input_2 (alu_src_mux_out ),
-        .sa          (sa_out          ),
-        .cu_alu_op   (cu_alu_op_out   ),
-        .alu_result  (alu_result      )
+        .alu_input_1 (forward_mux_out_1 ),
+        .alu_input_2 (alu_src_mux_out   ),
+        .sa          (sa_out            ),
+        .cu_alu_op   (cu_alu_op_out     ),
+        .alu_result  (alu_result        )
     );
+
+wire[1:0] forward_A;
+wire[1:0] forward_B;
+
+// control signals to be forwarded to MEM stage
+wire                        en_mem_write_mem;
+wire[`REG_SRC_LENGTH - 1:0] cu_reg_src_mem;
+wire                        en_reg_write_mem;
 
 wire[31:0] alu_result_out;
 wire[31:0] reg2_data_mem;
 wire[31:0] extended_imm_out;
 wire[4:0]  destination_reg_out;
 
-// control signals to be forwarded to MEM stage
-wire                        en_mem_write_mem;
-wire[`REG_SRC_LENGTH - 1:0] cu_reg_src_mem;
-wire                        en_reg_write_mem;
+forwarding_unit u_forwarding_unit(
+                    .en_ex_mem_regwrite (en_reg_write_mem    ),
+                    .ex_mem_regdes      (destination_reg_out ),
+                    .id_ex_rs           (rs_out              ),
+                    .id_ex_rt           (rt_out              ),
+                    .en_mem_wb_regwrite (en_reg_write_wb     ),
+                    .mem_wb_regdes      (destination_reg_wb  ),
+                    .forward_A          (forward_A           ),
+                    .forward_B          (forward_B           )
+                );
+
+forward_mux u_forward_mux_1(
+                .forward_c  (forward_A         ),
+                .rs_rt_imm  (reg1_data_out     ),
+                .write_data (write_data        ),
+                .alu_result (alu_result_out    ),
+                .mux_out    (forward_mux_out_1 )
+            );
+
+forward_mux u_forward_mux_2(
+                .forward_c  (forward_B         ),
+                .rs_rt_imm  (reg2_data_out     ),
+                .write_data (write_data        ),
+                .alu_result (alu_result_out    ),
+                .mux_out    (forward_mux_out_2 )
+            );
+
+
+
 
 reg_ex_mem u_reg_ex_mem(
                .clk                 (clk                 ),
