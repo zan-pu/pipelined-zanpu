@@ -20,6 +20,8 @@ module reg_ex_mem(
            input wire                        en_mem_write_in,
            input wire[`REG_SRC_LENGTH - 1:0] cu_reg_src_in,
            input wire                        en_reg_write_in,
+           input wire                        en_lw_ex_mem_in,
+           input wire[3:0]                   stall_C,
 
            output reg[31:0]                  alu_result_out,
            output reg[31:0]                  reg2_data_out,
@@ -29,7 +31,8 @@ module reg_ex_mem(
 
            output reg                        en_mem_write_out,
            output reg[`REG_SRC_LENGTH - 1:0] cu_reg_src_out,
-           output reg                        en_reg_write_out
+           output reg                        en_reg_write_out,
+           output reg                        en_lw_ex_mem_out
        );
 
 // if rst/halt, zeroize all registers
@@ -46,8 +49,9 @@ always @ (posedge clk) begin
         en_mem_write_out    <= `MEM_WRITE_DIS;
         cu_reg_src_out      <= `REG_SRC_DEFAULT;
         en_reg_write_out    <= `REG_WRITE_DIS;
+        en_lw_ex_mem_out    <= `EN_LW_DEFAULT;
     end
-    else begin
+    else if(stall_C[3] == 0) begin
         alu_result_out      <= alu_result_in;
         reg2_data_out       <= reg2_data_in;
         jmp_dst_out         <= jmp_dst_in;
@@ -56,6 +60,20 @@ always @ (posedge clk) begin
         en_mem_write_out    <= en_mem_write_in;
         cu_reg_src_out      <= cu_reg_src_in;
         en_reg_write_out    <= en_reg_write_in;
+        en_lw_ex_mem_out    <= en_lw_ex_mem_in;
+    end
+    else begin
+        alu_result_out      <= `INIT_32;
+        reg2_data_out       <= `INIT_32;
+        jmp_dst_out         <= `INIT_32;
+        extended_imm_out    <= `INIT_32;
+        destination_reg_out <= `INIT_5;
+        en_mem_write_out    <= `MEM_WRITE_DIS;
+        cu_reg_src_out      <= `REG_SRC_DEFAULT;
+        en_reg_write_out    <= `REG_WRITE_DIS;
+        en_lw_ex_mem_out    <= `EN_LW_DEFAULT;
     end
 end
+
+
 endmodule

@@ -14,11 +14,18 @@ module register_file(
            input  wire[4:0]  rt,
            input  wire[4:0]  write_reg_addr, // rs or rd, defined in WB stage
            input  wire[31:0] write_data,     // write data back to dest reg
+           input  wire[4:0]  dst_reg_exe,  // dst_reg in stage-ex
+           input  wire[4:0]  dst_reg_mem,  // dst_reg in stage-mem
 
            input  wire       en_reg_write,   // enable register write
+           input  wire       en_reg_write_exe,
+           input  wire       en_reg_write_mem,
+           input  wire       en_lw_exe,
+           input  wire       en_lw_mem,
 
            output wire[31:0] reg1_data,
-           output wire[31:0] reg2_data
+           output wire[31:0] reg2_data,
+           output wire[1:0]  stall_signal
        );
 
 // Register file general purpose register
@@ -34,4 +41,11 @@ always @ (posedge clk) begin
         gpr[write_reg_addr] = write_data;
     end
 end
+
+assign stall_signal = ((en_reg_write_mem && en_lw_mem) && (dst_reg_mem == rs)) ? `MEM_REGW :
+       ((en_reg_write_mem && en_lw_mem) && (dst_reg_mem == rt)) ? `MEM_REGW :
+       ((en_reg_write_exe && en_lw_exe) && (dst_reg_exe == rs)) ? `EXE_REGW :
+       ((en_reg_write_exe && en_lw_exe) && (dst_reg_exe == rt)) ? `EXE_REGW :
+       `NON_REGW;
+
 endmodule

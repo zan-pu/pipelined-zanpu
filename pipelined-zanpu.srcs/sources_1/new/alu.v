@@ -52,7 +52,8 @@ always @ (*) begin
         `ALU_OP_OR :
             alu_temp_result <= {alu_input_1[31], alu_input_1} | {alu_input_2[31], alu_input_2};
         `ALU_OP_NOR:
-            alu_temp_result <= ~({alu_input_1[31], alu_input_1} | {alu_input_2[31], alu_input_2});
+            alu_temp_result <= (({alu_input_1[31], alu_input_1} & ~{alu_input_2[31], alu_input_2}) |
+                                (~{alu_input_1[31], alu_input_1} & {alu_input_2[31], alu_input_2}));
         `ALU_OP_XOR:
             alu_temp_result <= {alu_input_1[31], alu_input_1} ^ {alu_input_2[31], alu_input_2};
 
@@ -67,7 +68,7 @@ always @ (*) begin
             alu_temp_result <= {alu_input_2[31], alu_input_2} >> displacement;
         `ALU_OP_SRLV:
             alu_temp_result <= {alu_input_2[31], alu_input_2} >> displacement;
-            
+
         // shift right arithmetically
         `ALU_OP_SRA:
             alu_temp_result <= ({{31{alu_input_2[31]}}, 1'b0} << (~displacement)) | (alu_input_2 >> displacement);

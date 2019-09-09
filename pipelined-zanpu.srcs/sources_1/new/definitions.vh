@@ -129,16 +129,21 @@
 `define BRANCH_TRUE     1'b1       // Branch to true
 `define BRANCH_FALSE    1'b0       // Branch to false
 
+/* --- Hazard Control --- */
+
 // Forward Control Signals
 `define FORWARD_ONE_CYCLE 2'b10
 `define FORWARD_TWO_CYCLE 2'b01
 
 // Stall IN Signals
-`define EXE_REGW 2'b01
-`define MEM_REGW 2'b10
-`define NON_REGW 2'b00
+`define EXE_REGW          2'b01
+`define MEM_REGW          2'b10
+`define NON_REGW          2'b00
 
 // Stall Control Signals
-`define EXE_STALL 4'b0111
-`define MEM_STALL 4'b1111
-`define NON_STALL 4'b0000
+`define EXE_STALL         4'b0111
+`define MEM_STALL         4'b1111
+`define NON_STALL         4'b0000
+
+// LW init
+`define EN_LW_DEFAULT     1'b0
