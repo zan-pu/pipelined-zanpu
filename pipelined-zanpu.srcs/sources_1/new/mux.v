@@ -6,14 +6,20 @@
  */
 
 module reg_dst_mux(
-           input  wire      cu_reg_dst,
-           input  wire[4:0] rt,
-           input  wire[4:0] rd,
-
-           output wire[4:0] mux_out
+           input  wire[`REG_DST_LENGTH - 1:0] cu_reg_dst,
+           input  wire[4:0]                   rt,
+           input  wire[4:0]                   rd,
+                  
+           output wire[4:0]                   mux_out
        );
+wire[4:0] reg_31;
+assign reg_31 = `REG_31_ADDR;
 
-assign mux_out = (cu_reg_dst == `REG_DST_RT) ? rt : rd;
+assign mux_out = 
+       (cu_reg_dst == `REG_DST_RT    ) ? rt :
+       (cu_reg_dst == `REG_DST_RD    ) ? rd :
+       (cu_reg_dst == `REG_DST_REG_31) ? reg_31 :
+       rt;
 endmodule
 
 module alu_src_mux(
@@ -32,13 +38,17 @@ module reg_src_mux(
            input  wire[31:0]                  alu_result,
            input  wire[31:0]                  read_mem_data,
            input  wire[31:0]                  extend_imm,
+           input  wire[31:0]                  jmp_dst,
 
            output wire[31:0]                  mux_out
     );
 
-assign mux_out = (cu_reg_src == `REG_SRC_ALU) ? alu_result :
-       (cu_reg_src == `REG_SRC_MEM) ? read_mem_data :
-       extend_imm;
+assign mux_out = 
+       (cu_reg_src == `REG_SRC_ALU    ) ? alu_result :
+       (cu_reg_src == `REG_SRC_MEM    ) ? read_mem_data :
+       (cu_reg_src == `REG_SRC_IMM    ) ? extend_imm :
+       (cu_reg_src == `REG_SRC_JMP_DST) ? jmp_dst :
+       alu_result;
 endmodule
 
 module forward_mux(
@@ -50,7 +60,8 @@ module forward_mux(
            output wire[31:0] mux_out
 );
 
-assign mux_out = (forward_C == `FORWARD_ONE_CYCLE) ? alu_result :
+assign mux_out = 
+        (forward_C == `FORWARD_ONE_CYCLE) ? alu_result :
         (forward_C == `FORWARD_TWO_CYCLE) ? write_data :
         rs_rt_imm;
 endmodule

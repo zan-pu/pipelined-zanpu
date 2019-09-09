@@ -13,6 +13,7 @@ module reg_id_ex(
            input  wire                       rst,
            input  wire[31:0]                 reg1_data_in,
            input  wire[31:0]                 reg2_data_in,
+           input  wire[31:0]                 jmp_dst_in,
            input  wire[4:0]                  rs_in,
            input  wire[4:0]                  rt_in,
            input  wire[4:0]                  rd_in,
@@ -25,10 +26,11 @@ module reg_id_ex(
            input wire[`ALU_OP_LENGTH  - 1:0] cu_alu_op_in,
            input wire                        en_mem_write_in,
            input wire[`REG_SRC_LENGTH - 1:0] cu_reg_src_in,
-           input wire                        cu_reg_dst_in,
+           input wire[`REG_DST_LENGTH - 1:0] cu_reg_dst_in,
 
            output reg[31:0]                  reg1_data_out,
            output reg[31:0]                  reg2_data_out,
+           output reg[31:0]                  jmp_dst_out,
            output reg[4:0]                   rs_out,
            output reg[4:0]                   rt_out,
            output reg[4:0]                   rd_out,
@@ -41,7 +43,7 @@ module reg_id_ex(
            output reg[`ALU_OP_LENGTH  - 1:0] cu_alu_op_out,
            output reg                        en_mem_write_out,
            output reg[`REG_SRC_LENGTH - 1:0] cu_reg_src_out,
-           output reg                        cu_reg_dst_out
+           output reg[`REG_DST_LENGTH - 1:0] cu_reg_dst_out
        );
 
 // if rst/halt, zeroize all registers
@@ -52,6 +54,7 @@ always @(posedge clk) begin
     if (zeroize) begin
         reg1_data_out    <= `INIT_32;
         reg2_data_out    <= `INIT_32;
+        jmp_dst_out      <= `INIT_32;
         rs_out           <= `INIT_5;
         rt_out           <= `INIT_5;
         rd_out           <= `INIT_5;
@@ -64,11 +67,12 @@ always @(posedge clk) begin
         cu_alu_op_out    <= `ALU_OP_DEFAULT;
         en_mem_write_out <= `MEM_WRITE_DIS;
         cu_reg_src_out   <= `REG_SRC_DEFAULT;
-        cu_reg_dst_out   <= `REG_DST_RT;
+        cu_reg_dst_out   <= `REG_DST_DEFAULT;
     end
     else begin
         reg1_data_out    <= reg1_data_in;
         reg2_data_out    <= reg2_data_in;
+        jmp_dst_out      <= jmp_dst_in;
         rs_out           <= rs_in;
         rt_out           <= rt_in;
         rd_out           <= rd_in;

@@ -86,7 +86,7 @@ wire                        cu_alu_src;
 wire[`ALU_OP_LENGTH  - 1:0] cu_alu_op;
 wire                        en_mem_write;
 wire[`REG_SRC_LENGTH - 1:0] cu_reg_src;
-wire                        cu_reg_dst;
+wire[`REG_DST_LENGTH - 1:0] cu_reg_dst;
 wire[`NPC_OP_LENGTH  - 1:0] cu_npc_op;
 
 control_unit u_control_unit(
@@ -119,12 +119,16 @@ register_file u_register_file(
                   .reg2_data      (reg2_data          )
               );
 
+wire[31:0] jmp_dst;
+
 npc u_npc(
         .pc        (pc        ),
         .imm16     (imm16     ),
         .imm26     (imm26     ),
+        .reg1_data (reg1_data ),
         .cu_npc_op (cu_npc_op ),
-        .npc       (npc       )
+        .npc       (npc       ),
+        .jmp_dst   (jmp_dst   )
     );
 
 branch_judge u_branch_judge(
@@ -135,6 +139,7 @@ branch_judge u_branch_judge(
 
 wire[31:0]                  reg1_data_out;
 wire[31:0]                  reg2_data_out;
+wire[31:0]                  jmp_dst_out;
 wire[4:0]                   rs_out;
 wire[4:0]                   rt_out;
 wire[4:0]                   rd_out;
@@ -146,13 +151,14 @@ wire                        cu_alu_src_out;
 wire[`ALU_OP_LENGTH  - 1:0] cu_alu_op_out;
 wire                        en_mem_write_out;
 wire[`REG_SRC_LENGTH - 1:0] cu_reg_src_out;
-wire                        cu_reg_dst_out;
+wire[`REG_DST_LENGTH - 1:0] cu_reg_dst_out;
 
 reg_id_ex u_reg_id_ex(
               .clk              (clk              ),
               .rst              (rst              ),
               .reg1_data_in     (reg1_data        ),
               .reg2_data_in     (reg2_data        ),
+              .jmp_dst_in       (jmp_dst          ),
               .rs_in            (rs               ),
               .rt_in            (rt               ),
               .rd_in            (rd               ),
@@ -167,6 +173,7 @@ reg_id_ex u_reg_id_ex(
               .cu_reg_dst_in    (cu_reg_dst       ),
               .reg1_data_out    (reg1_data_out    ),
               .reg2_data_out    (reg2_data_out    ),
+              .jmp_dst_out      (jmp_dst_out      ),
               .rs_out           (rs_out           ),
               .rt_out           (rt_out           ),
               .rd_out           (rd_out           ),
@@ -261,14 +268,14 @@ forward_mux u_forward_mux_2(
                 .mux_out    (forward_mux_out_2 )
             );
 
-
-
+wire[31:0] jmp_dst_mem;
 
 reg_ex_mem u_reg_ex_mem(
                .clk                 (clk                 ),
                .rst                 (rst                 ),
                .alu_result_in       (alu_result          ),
                .reg2_data_in        (reg2_data_out       ),
+               .jmp_dst_in          (jmp_dst_out         ),
                .extended_imm_in     (extended_imm        ),
                .destination_reg_in  (destination_reg     ),
                .en_mem_write_in     (en_mem_write        ),
@@ -276,6 +283,7 @@ reg_ex_mem u_reg_ex_mem(
                .en_reg_write_in     (en_reg_write_out    ),
                .alu_result_out      (alu_result_out      ),
                .reg2_data_out       (reg2_data_mem       ),
+               .jmp_dst_out         (jmp_dst_mem         ),
                .extended_imm_out    (extended_imm_out    ),
                .destination_reg_out (destination_reg_out ),
                .en_mem_write_out    (en_mem_write_mem    ),
@@ -300,17 +308,21 @@ wire[31:0]                  read_mem_data_out;
 wire[31:0]                  extended_imm_wb;
 wire[`REG_SRC_LENGTH - 1:0] cu_reg_src_wb;
 
+wire[31:0]                  jmp_dst_wb;
+
 reg_mem_wb u_reg_mem_wb(
                .clk                 (clk                 ),
                .rst                 (rst                 ),
                .alu_result_in       (alu_result_out      ),
                .read_mem_data_in    (read_mem_data       ),
+               .jmp_dst_in          (jmp_dst_mem         ),
                .extended_imm_in     (extended_imm_out    ),
                .destination_reg_in  (destination_reg_out ),
                .cu_reg_src_in       (cu_reg_src_mem      ),
                .en_reg_write_in     (en_reg_write_mem    ),
                .alu_result_out      (alu_result_wb       ),
                .read_mem_data_out   (read_mem_data_out   ),
+               .jmp_dst_out         (jmp_dst_wb          ),
                .extended_imm_out    (extended_imm_wb     ),
                .destination_reg_out (destination_reg_wb  ),
                .cu_reg_src_out      (cu_reg_src_wb       ),
@@ -324,6 +336,7 @@ reg_src_mux u_reg_src_mux(
                 .alu_result    (alu_result_wb     ),
                 .read_mem_data (read_mem_data_out ),
                 .extend_imm    (extended_imm_wb   ),
+                .jmp_dst       (jmp_dst_wb        ),
                 .mux_out       (write_data        )
             );
 endmodule
