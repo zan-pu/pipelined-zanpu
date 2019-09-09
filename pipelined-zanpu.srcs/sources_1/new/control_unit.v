@@ -18,7 +18,7 @@ module control_unit(
            output wire[`ALU_OP_LENGTH  - 1:0] cu_alu_op,
            output wire                        en_mem_write,
            output wire[`REG_SRC_LENGTH - 1:0] cu_reg_src,
-           output wire                        cu_reg_dst,
+           output wire[`REG_DST_LENGTH - 1:0] cu_reg_dst,
            output wire[`NPC_OP_LENGTH  - 1:0] cu_npc_op
        );
 
@@ -28,7 +28,7 @@ wire inst_sltu, inst_and, inst_or, inst_nor, inst_xor, inst_sll;
 wire inst_srl, inst_sra, inst_sllv, inst_srlv, inst_srav, inst_jr;
 wire inst_jalr, inst_addi, inst_addiu, inst_sltiu;
 wire inst_andi, inst_ori, inst_xori, inst_lui, inst_lw, inst_sw;
-wire inst_beq, inst_bne, inst_j;
+wire inst_beq, inst_bne, inst_j, inst_jal;
 
 /* --- Decode instructions --- */
 
@@ -69,6 +69,7 @@ assign inst_bne       = (opcode == `INST_BNE   ) ? 1 : 0;
 
 // J-Type Instructions
 assign inst_j         = (opcode == `INST_J     ) ? 1 : 0;
+assign inst_jal       = (opcode == `INST_JAL   ) ? 1 : 0;
 
 /* --- Determine control signals --- */
 
@@ -92,10 +93,14 @@ assign cu_alu_op =
 
 // RegDst
 assign cu_reg_dst =
-       (inst_add   || inst_addu  || inst_sub   || inst_subu ||
-        inst_slt   || inst_sltu  || inst_and   || inst_or   ||
-        inst_nor   || inst_xor   || inst_sll   || inst_srl  ||
-        inst_sra   || inst_sllv  || inst_srlv  || inst_srav ) ? 1 : 0;
+       (inst_add   || inst_addu  || inst_sub   || inst_subu  ||
+        inst_slt   || inst_sltu  || inst_and   || inst_or    ||
+        inst_nor   || inst_xor   || inst_sll   || inst_srl   ||
+        inst_sra   || inst_sllv  || inst_srlv  || inst_srav  ||
+        inst_jalr                                            ) ? `REG_DST_RD :
+       (inst_lui   || inst_addi  || inst_addiu || inst_sltiu ||
+        inst_andi  || inst_ori   || inst_xori  || inst_lw    ) ? `REG_DST_RT :
+       (inst_jal) ? `REG_DST_REG_31 : `REG_DST_DEFAULT;
 // ALUSrc
 assign cu_alu_src =
        (inst_addi  || inst_addiu || inst_sltiu || inst_andi ||
@@ -109,7 +114,7 @@ assign en_reg_write =
         inst_slt   || inst_sltu  || inst_and   || inst_or    ||
         inst_nor   || inst_xor   || inst_sll   || inst_srl   ||
         inst_sra   || inst_sllv  || inst_srlv  || inst_srav  ||
-        inst_lw                                              ) ? 1 : 0;
+        inst_lw    || inst_jal   || inst_jalr                ) ? 1 : 0;
 
 // MemWrite
 assign en_mem_write = (inst_sw) ? 1 : 0;
@@ -128,7 +133,8 @@ assign cu_reg_src =
         inst_srlv  || inst_srav                              ) ? `REG_SRC_ALU :
 
        // Data memory
-       (inst_lw                                              ) ? `REG_SRC_MEM : `REG_SRC_DEFAULT;
+       (inst_lw                                              ) ? `REG_SRC_MEM : 
+       (inst_jal   || inst_jalr                              ) ? `REG_SRC_JMP_DST : `REG_SRC_DEFAULT;
 
 // ExtOp
 assign cu_ext_op =
@@ -151,11 +157,20 @@ assign cu_npc_op =
         inst_srl   || inst_sra   || inst_sllv  || inst_srlv  ||
         inst_srav                                            ) ? `NPC_OP_NEXT :
 
+       // BEQ
        // normal: next instruction
        (inst_beq && !zero) ? `NPC_OP_NEXT :
        // jump to target
-       (inst_beq && zero) ? `NPC_OP_OFFSET :
+       (inst_beq &&  zero) ? `NPC_OP_OFFSET :
 
-       // just jump!
-       (inst_j) ? `NPC_OP_JUMP : `NPC_OP_DEFAULT;
+       // BNE
+       // normal: next instruction
+       (inst_bne &&  zero) ? `NPC_OP_NEXT :
+       // jump to target
+       (inst_bne && !zero) ? `NPC_OP_OFFSET :
+
+       // jump to instr_index
+       (inst_j   || inst_jal)  ? `NPC_OP_JUMP :
+       // jump to rs data
+       (inst_jr  || inst_jalr) ? `NPC_OP_RS : `NPC_OP_DEFAULT;
 endmodule

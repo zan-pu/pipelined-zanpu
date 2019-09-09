@@ -13,6 +13,7 @@ module reg_mem_wb(
            input wire                        rst,
            input wire[31:0]                  alu_result_in,
            input wire[31:0]                  read_mem_data_in,
+           input wire[31:0]                  jmp_dst_in,
            input wire[31:0]                  extended_imm_in,
            input wire[4:0]                   destination_reg_in,
 
@@ -21,6 +22,7 @@ module reg_mem_wb(
 
            output reg[31:0]                  alu_result_out,
            output reg[31:0]                  read_mem_data_out,
+           output reg[31:0]                  jmp_dst_out,
            output reg[31:0]                  extended_imm_out,
            output reg[4:0]                   destination_reg_out,
 
@@ -37,6 +39,7 @@ always @ (posedge clk) begin
     if (zeroize) begin
         alu_result_out      <= `INIT_32;
         read_mem_data_out   <= `INIT_32;
+        jmp_dst_out         <= `INIT_32;
         extended_imm_out    <= `INIT_32;
         destination_reg_out <= `INIT_32;
         cu_reg_src_out      <= `REG_SRC_DEFAULT;
@@ -45,6 +48,7 @@ always @ (posedge clk) begin
     else begin
         alu_result_out      <= alu_result_in;
         read_mem_data_out   <= read_mem_data_in;
+        jmp_dst_out         <= jmp_dst_in;
         extended_imm_out    <= extended_imm_in;
         destination_reg_out <= destination_reg_in;
         cu_reg_src_out      <= cu_reg_src_in;
