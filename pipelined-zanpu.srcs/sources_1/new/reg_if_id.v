@@ -12,6 +12,7 @@ module reg_if_id(
            input  wire       clk,
            input  wire       rst,
            input  wire[31:0] instructions_in,
+           input  wire[3:0]  stall_C,
 
            output reg[31:0]  instructions_out
        );
@@ -24,8 +25,11 @@ always @ (posedge clk) begin
     if (zeroize) begin
         instructions_out <= `INIT_32;
     end
-    else begin
+    else if(stall_C[1] == 0) begin
         instructions_out <= instructions_in;
+    end
+    else begin
+        // do nothing
     end
 end
 

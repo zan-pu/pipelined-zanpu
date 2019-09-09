@@ -13,6 +13,8 @@ module pc(
            input  wire       rst,
            input  wire[31:0] npc,
 
+           input  wire[3:0]  stall_C,
+
            output reg[31:0]  pc
        );
 
@@ -20,8 +22,11 @@ always @ (posedge clk or posedge rst) begin
     if (rst) begin
         pc <= `INIT_32;
     end
-    else begin
+    else if(stall_C[0] == 0) begin
         pc <= npc;
+    end
+    else begin
+
     end
 end
 endmodule

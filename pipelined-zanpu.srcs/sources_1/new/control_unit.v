@@ -19,7 +19,8 @@ module control_unit(
            output wire                        en_mem_write,
            output wire[`REG_SRC_LENGTH - 1:0] cu_reg_src,
            output wire[`REG_DST_LENGTH - 1:0] cu_reg_dst,
-           output wire[`NPC_OP_LENGTH  - 1:0] cu_npc_op
+           output wire[`NPC_OP_LENGTH  - 1:0] cu_npc_op,
+           output wire                        en_lw
        );
 
 // Init instruction signals
@@ -72,6 +73,9 @@ assign inst_j         = (opcode == `INST_J     ) ? 1 : 0;
 assign inst_jal       = (opcode == `INST_JAL   ) ? 1 : 0;
 
 /* --- Determine control signals --- */
+
+// LW
+assign en_lw = inst_lw ? 1 : 0;
 
 // ALUOp
 assign cu_alu_op =
