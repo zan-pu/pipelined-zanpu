@@ -11,6 +11,7 @@ module control_unit(
            input wire[4:0]                    sa,     // Shift operation operand
            input wire[5:0]                    func,   // R-Type instruction function
            input wire                         zero,
+           input wire                         blez_zero,
 
            output wire                        en_reg_write,
            output wire[`EXT_OP_LENGTH  - 1:0] cu_ext_op,
@@ -27,9 +28,9 @@ module control_unit(
 wire type_r, inst_add, inst_addu, inst_sub, inst_subu, inst_slt;
 wire inst_sltu, inst_and, inst_or, inst_nor, inst_xor, inst_sll;
 wire inst_srl, inst_sra, inst_sllv, inst_srlv, inst_srav, inst_jr;
-wire inst_jalr, inst_addi, inst_addiu, inst_sltiu;
+wire inst_jalr, inst_addi, inst_addiu, inst_sltiu, inst_slti;
 wire inst_andi, inst_ori, inst_xori, inst_lui, inst_lw, inst_sw;
-wire inst_beq, inst_bne, inst_j, inst_jal;
+wire inst_beq, inst_bne, inst_j, inst_jal, inst_blez;
 
 /* --- Decode instructions --- */
 
@@ -58,6 +59,7 @@ assign inst_jalr      = (type_r && func == `FUNC_JALR ) ? 1 : 0;
 // I-Type Instructions
 assign inst_addi      = (opcode == `INST_ADDI  ) ? 1 : 0;
 assign inst_addiu     = (opcode == `INST_ADDIU ) ? 1 : 0;
+assign inst_slti      = (opcode == `INST_SLTI  ) ? 1 : 0;
 assign inst_sltiu     = (opcode == `INST_SLTIU ) ? 1 : 0;
 assign inst_andi      = (opcode == `INST_ANDI  ) ? 1 : 0;
 assign inst_ori       = (opcode == `INST_ORI   ) ? 1 : 0;
@@ -67,6 +69,7 @@ assign inst_lw        = (opcode == `INST_LW    ) ? 1 : 0;
 assign inst_sw        = (opcode == `INST_SW    ) ? 1 : 0;
 assign inst_beq       = (opcode == `INST_BEQ   ) ? 1 : 0;
 assign inst_bne       = (opcode == `INST_BNE   ) ? 1 : 0;
+assign inst_blez      = (opcode == `INST_BLEZ  ) ? 1 : 0;
 
 // J-Type Instructions
 assign inst_j         = (opcode == `INST_J     ) ? 1 : 0;
@@ -82,7 +85,8 @@ assign cu_alu_op =
        (inst_addi || inst_addiu || inst_add ||
         inst_addu || inst_lw    || inst_sw    ) ? `ALU_OP_ADD  : // ADD
        (inst_sub  || inst_subu  || inst_beq   ) ? `ALU_OP_SUB  : // SUB
-       (inst_slt  || inst_sltu  || inst_sltiu ) ? `ALU_OP_SLT  : // SLT
+       (inst_slt  || inst_sltu  || inst_sltiu ||
+        inst_slti                             ) ? `ALU_OP_SLT  : // SLT
        (inst_and  || inst_andi                ) ? `ALU_OP_AND  : // AND
        (inst_or   || inst_ori                 ) ? `ALU_OP_OR   : // OR
        (inst_xor  || inst_xori                ) ? `ALU_OP_XOR  : // XOR
@@ -102,12 +106,12 @@ assign cu_reg_dst =
         inst_nor   || inst_xor   || inst_sll   || inst_srl   ||
         inst_sra   || inst_sllv  || inst_srlv  || inst_srav  ||
         inst_jalr                                            ) ? `REG_DST_RD :
-       (inst_lui   || inst_addi  || inst_addiu || inst_sltiu ||
+       (inst_lui   || inst_addi  || inst_addiu || inst_sltiu || inst_slti  ||
         inst_andi  || inst_ori   || inst_xori  || inst_lw    ) ? `REG_DST_RT :
        (inst_jal) ? `REG_DST_REG_31 : `REG_DST_DEFAULT;
 // ALUSrc
 assign cu_alu_src =
-       (inst_addi  || inst_addiu || inst_sltiu || inst_andi ||
+       (inst_addi  || inst_addiu || inst_sltiu || inst_andi || inst_slti ||
         inst_ori   || inst_xori  || inst_lw    || inst_sw   ) ? 1 : 0;
 
 // RegWrite
@@ -118,7 +122,7 @@ assign en_reg_write =
         inst_slt   || inst_sltu  || inst_and   || inst_or    ||
         inst_nor   || inst_xor   || inst_sll   || inst_srl   ||
         inst_sra   || inst_sllv  || inst_srlv  || inst_srav  ||
-        inst_lw    || inst_jal   || inst_jalr                ) ? 1 : 0;
+        inst_lw    || inst_jal   || inst_jalr  || inst_slti  ) ? 1 : 0;
 
 // MemWrite
 assign en_mem_write = (inst_sw) ? 1 : 0;
@@ -134,10 +138,10 @@ assign cu_reg_src =
         inst_sub   || inst_subu  || inst_slt   || inst_sltu  ||
         inst_and   || inst_or    || inst_nor   || inst_xor   ||
         inst_sll   || inst_srl   || inst_sra   || inst_sllv  ||
-        inst_srlv  || inst_srav                              ) ? `REG_SRC_ALU :
+        inst_srlv  || inst_srav  || inst_slti                ) ? `REG_SRC_ALU :
 
        // Data memory
-       (inst_lw                                              ) ? `REG_SRC_MEM : 
+       (inst_lw                                              ) ? `REG_SRC_MEM :
        (inst_jal   || inst_jalr                              ) ? `REG_SRC_JMP_DST : `REG_SRC_DEFAULT;
 
 // ExtOp
@@ -145,7 +149,7 @@ assign cu_ext_op =
        // shift left 16
        (inst_lui                               ) ? `EXT_OP_SFT16 :
        // signed extend
-       (inst_add   || inst_addiu || inst_sltiu ) ? `EXT_OP_SIGNED :
+       (inst_add   || inst_addiu || inst_sltiu || inst_slti ) ? `EXT_OP_SIGNED :
        // unsigned extend
        (inst_andi  || inst_ori   || inst_xori  ||
         inst_lw    || inst_sw                  ) ? `EXT_OP_UNSIGNED : `EXT_OP_DEFAULT;
@@ -159,19 +163,22 @@ assign cu_npc_op =
         inst_subu  || inst_slt   || inst_sltu  || inst_and   ||
         inst_or    || inst_nor   || inst_xor   || inst_sll   ||
         inst_srl   || inst_sra   || inst_sllv  || inst_srlv  ||
-        inst_srav                                            ) ? `NPC_OP_NEXT :
+        inst_srav  || inst_slti                              ) ? `NPC_OP_NEXT :
 
        // BEQ
        // normal: next instruction
-       (inst_beq && !zero) ? `NPC_OP_NEXT :
+       (inst_beq  && !zero) ? `NPC_OP_NEXT :
        // jump to target
-       (inst_beq &&  zero) ? `NPC_OP_OFFSET :
+       (inst_beq  &&  zero) ? `NPC_OP_OFFSET :
 
        // BNE
        // normal: next instruction
-       (inst_bne &&  zero) ? `NPC_OP_NEXT :
+       (inst_bne  &&  zero) ? `NPC_OP_NEXT :
        // jump to target
-       (inst_bne && !zero) ? `NPC_OP_OFFSET :
+       (inst_bne  && !zero) ? `NPC_OP_OFFSET :
+
+       (inst_blez && blez_zero) ? `NPC_OP_OFFSET :
+       (inst_blez && !blez_zero) ? `NPC_OP_NEXT :
 
        // jump to instr_index
        (inst_j   || inst_jal)  ? `NPC_OP_JUMP :

@@ -11,11 +11,11 @@
 module zanpu_top(
            input wire clk,
            input wire rst,
-           
+
            output wire io_wen,
            output wire[31:0] io_addr,
            output wire[31:0] io_wdata,
-           input wire[31:0] io_rdata 
+           input wire[31:0] io_rdata
        );
 
 /*
@@ -40,12 +40,15 @@ pc u_pc(
        .pc  (pc  )
    );
 
-instruction_memory u_instruction_memory(
-                       .instruction_addr (pc[11:2]    ),
-                       .instruction      (instruction )
-                   );
+// instruction_memory u_instruction_memory(
+//                        .instruction_addr (pc[11:2]    ),
+//                        .instruction      (instruction )
+//                    );
 
-
+instruction_mem u_instruction_mem (
+                    .a(pc[11:2]),      // input wire [9 : 0] a
+                    .spo(instruction)  // output wire [31 : 0] spo
+                );
 
 /* id/id register */
 

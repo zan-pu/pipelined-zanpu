@@ -47,6 +47,7 @@
 // I-Type instructions
 `define INST_ADDI       6'b001000  // ADDI
 `define INST_ADDIU      6'b001001  // ADDIU
+`define INST_SLTI       6'b001010  // SLTI
 `define INST_SLTIU      6'b001011  // SLTIU
 `define INST_ANDI       6'b001100  // ANDI
 `define INST_ORI        6'b001101  // ORI
@@ -56,6 +57,7 @@
 `define INST_SW         6'b101011  // SW
 `define INST_BEQ        6'b000100  // BEQ
 `define INST_BNE        6'b000101  // BNE
+`define INST_BLEZ       6'b000110  // BLEZ
 
 // J-Type instructions
 `define INST_J          6'b000010  // J
