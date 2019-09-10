@@ -10,7 +10,12 @@
 
 module zanpu_top(
            input wire clk,
-           input wire rst
+           input wire rst,
+           
+           output wire io_wen,
+           output wire[31:0] io_addr,
+           output wire[31:0] io_wdata,
+           input wire[31:0] io_rdata 
        );
 
 /*
@@ -324,13 +329,24 @@ reg_ex_mem u_reg_ex_mem(
            );
 
 /* --- Stage 4: Memory --- */
+/*
+0 4095
+*/
+
+wire access_io = (alu_result_out[31:16] == 16'hffff) ? 1'b1 : 1'b0;
+wire[31:0] dm_rdata;
+wire dm_wen;
+assign io_wen = (access_io && en_mem_write_mem);
+assign dm_wen = (access_io == 1'b0 && en_mem_write_mem);
+
+assign read_mem_data = (access_io == 1'b1) ? io_rdata : dm_rdata;
 
 data_memory u_data_memory(
                 .clk            (clk                  ),
-                .en_mem_write   (en_mem_write_mem     ),
+                .en_mem_write   (dm_wen               ),
                 .mem_addr       (alu_result_out[11:2] ),
                 .write_mem_data (reg2_data_mem        ),
-                .read_mem_data  (read_mem_data        )
+                .read_mem_data  (dm_rdata             )
             );
 
 wire[31:0]                  alu_result_wb;
