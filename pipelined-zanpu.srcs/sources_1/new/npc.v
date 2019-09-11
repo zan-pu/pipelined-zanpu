@@ -23,7 +23,7 @@ module npc(
 wire[31:0] pc_4;
 assign pc_4 = pc + 32'h4;
 
-assign jmp_dst = pc + 32'h8;
+assign jmp_dst = pc + 32'h4;
 
 assign npc =
        (cu_npc_op == `NPC_OP_NEXT  ) ? pc_4 :                                       // pc + 4

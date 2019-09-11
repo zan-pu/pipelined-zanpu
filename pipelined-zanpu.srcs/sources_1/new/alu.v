@@ -52,8 +52,7 @@ always @ (*) begin
         `ALU_OP_OR :
             alu_temp_result <= {alu_input_1[31], alu_input_1} | {alu_input_2[31], alu_input_2};
         `ALU_OP_NOR:
-            alu_temp_result <= (({alu_input_1[31], alu_input_1} & ~{alu_input_2[31], alu_input_2}) |
-                                (~{alu_input_1[31], alu_input_1} & {alu_input_2[31], alu_input_2}));
+            alu_temp_result <= ~{alu_input_1[31], alu_input_1} | {alu_input_2[31], alu_input_2};
         `ALU_OP_XOR:
             alu_temp_result <= {alu_input_1[31], alu_input_1} ^ {alu_input_2[31], alu_input_2};
 

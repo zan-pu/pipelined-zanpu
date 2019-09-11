@@ -35,12 +35,15 @@ pc u_pc(
        .pc  (pc  )
    );
 
-instruction_memory u_instruction_memory(
-                       .instruction_addr (pc[11:2]    ),
-                       .instruction      (instruction )
+// instruction_memory u_instruction_memory(
+//                        .instruction_addr (pc[11:2]    ),
+//                        .instruction      (instruction )
+//                    );
+
+instruction_mem_ip u_instruction_memory_ip (
+                       .a   (pc[11:2]    ),    // input wire [9 : 0] a
+                       .spo (instruction )     // output wire [31 : 0] spo
                    );
-
-
 
 /* id/id register */
 
@@ -303,11 +306,11 @@ reg_ex_mem u_reg_ex_mem(
                .clk                 (clk                 ),
                .rst                 (rst                 ),
                .alu_result_in       (alu_result          ),
-               .reg2_data_in        (reg2_data_out       ),
+               .reg2_data_in        (forward_mux_out_2   ),
                .jmp_dst_in          (jmp_dst_out         ),
                .extended_imm_in     (extended_imm        ),
                .destination_reg_in  (destination_reg     ),
-               .en_mem_write_in     (en_mem_write        ),
+               .en_mem_write_in     (en_mem_write_out    ),
                .cu_reg_src_in       (cu_reg_src_out      ),
                .en_reg_write_in     (en_reg_write_out    ),
                .en_lw_ex_mem_in     (en_lw_id_ex_out     ),
@@ -325,13 +328,21 @@ reg_ex_mem u_reg_ex_mem(
 
 /* --- Stage 4: Memory --- */
 
-data_memory u_data_memory(
-                .clk            (clk                  ),
-                .en_mem_write   (en_mem_write_mem     ),
-                .mem_addr       (alu_result_out[11:2] ),
-                .write_mem_data (reg2_data_mem        ),
-                .read_mem_data  (read_mem_data        )
-            );
+// data_memory u_data_memory(
+//                 .clk            (clk                  ),
+//                 .en_mem_write   (en_mem_write_mem     ),
+//                 .mem_addr       (alu_result_out[11:2] ),
+//                 .write_mem_data (reg2_data_mem        ),
+//                 .read_mem_data  (read_mem_data        )
+//             );
+
+data_memory_ip u_data_memory_ip (
+                   .a(alu_result_out[11:2]),      // input wire [9 : 0] a
+                   .d(reg2_data_mem),      // input wire [31 : 0] d
+                   .clk(clk),  // input wire clk
+                   .we(en_mem_write_mem),    // input wire we
+                   .spo(read_mem_data)  // output wire [31 : 0] spo
+               );
 
 wire[31:0]                  alu_result_wb;
 wire[31:0]                  extended_imm_wb;
